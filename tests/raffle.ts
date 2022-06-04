@@ -328,5 +328,17 @@ describe('raffle', () => {
     console.log("Vault balance: ", await provider.connection.getTokenAccountBalance(vault));
   })
 
+  it ('Filter lottery and ticket', async () => {
+    const lotteries = await program.account.lottery.all({
+            memcmp: {
+                offset: 9,
+                bytes: provider.wallet.payer.publicKey.toBase58(),
+            },
+        });
+    console.log(lotteries)
+    const pubkeys = lotteries.map(l => l.publicKey);
+    const accountInfo = await provider.connection.getAccountInfo(pubkeys[0]);
+    
+  })
 
 });

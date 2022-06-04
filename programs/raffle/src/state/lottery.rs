@@ -54,5 +54,5 @@ pub struct Lottery {
 }
 
 impl Lottery {
-    pub const LEN: usize = 8 + 1 + 32 + 33 + 32 + 32 + 9 + 8 + 8 + 8 + 8 + 8 + 8 + 32*10 + 1 + 8;
+    pub const LEN: usize = 8 + 1 + 32 + 33 + 32 + 8 + 8 + 8 + 8 + 8 + 8 + 32*10 + 8 + 1 + 8;
 }
