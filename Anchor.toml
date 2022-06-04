@@ -1,13 +1,13 @@
 [programs.localnet]
 raffle = "CUX9vxtW7yP51VFPY9cbNzEDSvhetr4gTDduygQNpgXE"
 [programs.devnet]
-raffle = "CUX9vxtW7yP51VFPY9cbNzEDSvhetr4gTDduygQNpgXE"
+raffle = "2T49vgEJQFkkwR6nSNK7PuXyDEHnB7ctQ66NufFkbi88"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/home/wstar/.config/solana/id.json"
 
 [scripts]
