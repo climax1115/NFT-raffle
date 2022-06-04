@@ -6,7 +6,7 @@ pub mod error;
 use anchor_lang::prelude::*;
 use anchor_spl::token::{ Token, TokenAccount, Mint };
 
-declare_id!("CUX9vxtW7yP51VFPY9cbNzEDSvhetr4gTDduygQNpgXE");
+declare_id!("2T49vgEJQFkkwR6nSNK7PuXyDEHnB7ctQ66NufFkbi88");
 
 #[program]
 pub mod raffle {
