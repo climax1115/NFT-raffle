@@ -58,6 +58,25 @@ pub mod raffle {
         )
     }
 
+    pub fn update_lottery(
+            ctx: Context<UpdateLotteryAccount>, 
+            start_date: i64,
+            end_date: i64,
+            ticket_price: u64,
+            ticket_numbers: u64,
+            limit_tickets: u64,
+            winners: u64
+        ) -> Result<()> {
+        ctx.accounts.process(
+            start_date,
+            end_date,
+            ticket_price,
+            ticket_numbers,
+            limit_tickets,
+            winners
+        )
+    }
+
     pub fn create_ticket(ctx: Context<CreateTicketAccount>, bump: u8) -> Result<()> {
         ctx.accounts.process(
             bump
@@ -158,6 +177,24 @@ pub struct CreateSplLotteryAccount<'info> {
     pub rent_sysvar: Sysvar<'info, Rent>,
     pub clock_sysvar: Sysvar<'info, Clock>,
     pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct UpdateLotteryAccount<'info> {
+    /// lottery info
+    #[account(
+        mut,
+        constraint = lottery.creator == creator.key(),
+    )]
+    pub lottery: Box<Account<'info, state::Lottery>>,
+
+    /// the creator of the lottery
+    #[account(mut)]
+    pub creator: Signer<'info>,
+
+    pub rent_sysvar: Sysvar<'info, Rent>,
+    pub clock_sysvar: Sysvar<'info, Clock>,
     pub system_program: Program<'info, System>,
 }
 

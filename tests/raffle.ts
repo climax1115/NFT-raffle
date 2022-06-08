@@ -42,8 +42,9 @@ describe('raffle', () => {
       lotteryKey.toBuffer(),
     ], program.programId)
 
-
-    const startDate = parseInt((new Date()).getTime() / 1000);
+    const now = new Date();
+    now.setDate(now.getDate() + 1);
+    const startDate = parseInt(now.getTime() / 1000);
     const endDate = startDate + 3 * 24 * 3600;
 
     const tx = await program.methods.createSolLottery(
@@ -58,6 +59,37 @@ describe('raffle', () => {
         lottery,
         creator: provider.wallet.payer.publicKey,
         vault: vault.publicKey,
+        rentSysvar: SYSVAR_RENT_PUBKEY,
+        clockSysvar: SYSVAR_CLOCK_PUBKEY,
+        systemProgram: SystemProgram.programId,
+      }).rpc();
+
+    const lotteryAccount = await program.account.lottery.fetch(lottery);
+    console.log(lotteryAccount)
+    // console.log("Your transaction signature", tx);
+  });
+
+  it('Update Sol Raffle', async () => {
+    const [lottery] = await PublicKey.findProgramAddress([
+      Buffer.from("lottery"), 
+      provider.wallet.payer.publicKey.toBuffer(),
+      lotteryKey.toBuffer(),
+    ], program.programId)
+
+    const now = new Date();
+    now.setDate(now.getDate() + 2);
+    const startDate = parseInt(now.getTime() / 1000);
+    const endDate = startDate + 4 * 24 * 3600;
+
+    const tx = await program.methods.updateLottery(
+      new anchor.BN(startDate), 
+      new anchor.BN(endDate), 
+      new anchor.BN(0.1 * LAMPORTS_PER_SOL),
+      new anchor.BN(3), 
+      new anchor.BN(1), 
+      new anchor.BN(1)).accounts({
+        lottery,
+        creator: provider.wallet.payer.publicKey,
         rentSysvar: SYSVAR_RENT_PUBKEY,
         clockSysvar: SYSVAR_CLOCK_PUBKEY,
         systemProgram: SystemProgram.programId,

@@ -7,7 +7,7 @@ raffle = "2T49vgEJQFkkwR6nSNK7PuXyDEHnB7ctQ66NufFkbi88"
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "/home/wstar/.config/solana/id.json"
 
 [scripts]
