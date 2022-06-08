@@ -50,9 +50,9 @@ pub struct Lottery {
     pub bump: u8,
 
     /// key
-    pub lottery_key: u64,
+    pub lottery_key: Pubkey,
 }
 
 impl Lottery {
-    pub const LEN: usize = 8 + 1 + 32 + 33 + 32 + 8 + 8 + 8 + 8 + 8 + 8 + 32*10 + 8 + 1 + 8;
+    pub const LEN: usize = 8 + 1 + 32 + 33 + 32 + 8 + 8 + 8 + 8 + 8 + 8 + 32*10 + 8 + 1 + 32;
 }

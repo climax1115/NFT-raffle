@@ -6,7 +6,7 @@ impl<'info> CreateSolLotteryAccount<'info> {
     pub fn process(
         &mut self,
         lottery_bump: u8,
-        lottery_key: u64,
+        lottery_key: Pubkey,
         start_date: UnixTimestamp,
         end_date: UnixTimestamp,
         ticket_price: u64,
@@ -51,7 +51,7 @@ impl<'info> CreateSplLotteryAccount<'info> {
     pub fn process(
         &mut self,
         lottery_bump: u8,
-        lottery_key: u64,
+        lottery_key: Pubkey,
         start_date: UnixTimestamp,
         end_date: UnixTimestamp,
         ticket_price: u64,

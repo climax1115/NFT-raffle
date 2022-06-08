@@ -32,14 +32,14 @@ describe('raffle', () => {
   const program = anchor.workspace.Raffle as Program<Raffle>;
   const provider = anchor.AnchorProvider.env();
 
-  const lotteryKey = 1;
-  const lotteryKey2 = 2;
+  const lotteryKey = Keypair.generate().publicKey;
+  const lotteryKey2 = Keypair.generate().publicKey;
   const vault = Keypair.generate();
   it('Create Sol Raffle', async () => {
     const [lottery, bump] = await PublicKey.findProgramAddress([
       Buffer.from("lottery"), 
       provider.wallet.payer.publicKey.toBuffer(),
-      (new anchor.BN(lotteryKey, "be")).toBuffer("be", 8),
+      lotteryKey.toBuffer(),
     ], program.programId)
 
 
@@ -48,7 +48,7 @@ describe('raffle', () => {
 
     const tx = await program.methods.createSolLottery(
       bump, 
-      new anchor.BN(lotteryKey),
+      lotteryKey,
       new anchor.BN(startDate), 
       new anchor.BN(endDate), 
       new anchor.BN(0.1 * LAMPORTS_PER_SOL),
@@ -79,7 +79,7 @@ describe('raffle', () => {
     const [lottery] = await PublicKey.findProgramAddress([
       Buffer.from("lottery"), 
       provider.wallet.payer.publicKey.toBuffer(),
-      (new anchor.BN(lotteryKey, "be")).toBuffer("be", 8),
+      lotteryKey.toBuffer(),
     ], program.programId)
 
     const [ticket, bump] = await PublicKey.findProgramAddress([
@@ -122,7 +122,7 @@ describe('raffle', () => {
     const [lottery] = await PublicKey.findProgramAddress([
       Buffer.from("lottery"), 
       provider.wallet.payer.publicKey.toBuffer(),
-      (new anchor.BN(lotteryKey, "be")).toBuffer("be", 8),
+      lotteryKey.toBuffer(),
     ], program.programId)
 
     const [ticket, bump] = await PublicKey.findProgramAddress([
@@ -180,7 +180,7 @@ describe('raffle', () => {
       const [lottery] = await PublicKey.findProgramAddress([
         Buffer.from("lottery"), 
         provider.wallet.payer.publicKey.toBuffer(),
-        (new anchor.BN(lotteryKey, "be")).toBuffer("be", 8),
+        lotteryKey.toBuffer(),
       ], program.programId)
 
       const [ticket, bump] = await PublicKey.findProgramAddress([
@@ -215,7 +215,7 @@ describe('raffle', () => {
     const [lottery] = await PublicKey.findProgramAddress([
       Buffer.from("lottery"), 
       provider.wallet.payer.publicKey.toBuffer(),
-      (new anchor.BN(lotteryKey, "be")).toBuffer("be", 8),
+      lotteryKey.toBuffer(),
     ], program.programId)
 
     const tx = await program.methods.closeLottery([
@@ -247,7 +247,7 @@ describe('raffle', () => {
     const [lottery, bump] = await PublicKey.findProgramAddress([
       Buffer.from("lottery"), 
       provider.wallet.payer.publicKey.toBuffer(),
-      (new anchor.BN(lotteryKey2, "be")).toBuffer("be", 8),
+      lotteryKey2.toBuffer(),
     ], program.programId)
 
 
@@ -257,7 +257,7 @@ describe('raffle', () => {
 
     const tx = await program.methods.createSplLottery(
       bump, 
-      new anchor.BN(lotteryKey2),
+      lotteryKey2,
       new anchor.BN(startDate), 
       new anchor.BN(endDate), 
       new anchor.BN(0.1 * LAMPORTS_PER_SOL),
@@ -291,7 +291,7 @@ describe('raffle', () => {
     const [lottery] = await PublicKey.findProgramAddress([
       Buffer.from("lottery"), 
       provider.wallet.payer.publicKey.toBuffer(),
-      (new anchor.BN(lotteryKey2, "be")).toBuffer("be", 8),
+      lotteryKey2.toBuffer(),
     ], program.programId)
 
     const [ticket, bump] = await PublicKey.findProgramAddress([

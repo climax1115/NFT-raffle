@@ -15,7 +15,7 @@ pub mod raffle {
     pub fn create_sol_lottery(
             ctx: Context<CreateSolLotteryAccount>, 
             lottery_bump: u8,
-            lottery_key: u64,
+            lottery_key: Pubkey,
             start_date: i64,
             end_date: i64,
             ticket_price: u64,
@@ -38,7 +38,7 @@ pub mod raffle {
     pub fn create_spl_lottery(
             ctx: Context<CreateSplLotteryAccount>,
             lottery_bump: u8,
-            lottery_key: u64,
+            lottery_key: Pubkey,
             start_date: i64,
             end_date: i64,
             ticket_price: u64,
@@ -93,7 +93,7 @@ pub mod raffle {
 }
 
 #[derive(Accounts)]
-#[instruction(lottery_bump: u8, lottery_key: u64)]
+#[instruction(lottery_bump: u8, lottery_key: Pubkey)]
 pub struct CreateSolLotteryAccount<'info> {
     /// lottery info
     #[account(
@@ -103,7 +103,7 @@ pub struct CreateSolLotteryAccount<'info> {
         seeds = [
             utils::LOTTERY_PREFIX.as_bytes(), 
             creator.key().as_ref(), 
-            &lottery_key.to_be_bytes(),
+            lottery_key.key().as_ref(),
         ],
         bump,
     )]
@@ -123,7 +123,7 @@ pub struct CreateSolLotteryAccount<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(lottery_bump: u8, lottery_key: u64)]
+#[instruction(lottery_bump: u8, lottery_key: Pubkey)]
 pub struct CreateSplLotteryAccount<'info> {
     /// lottery info
     #[account(
@@ -133,7 +133,7 @@ pub struct CreateSplLotteryAccount<'info> {
         seeds = [
             utils::LOTTERY_PREFIX.as_bytes(), 
             creator.key().as_ref(), 
-            &lottery_key.to_be_bytes(),
+            lottery_key.key().as_ref(),
         ],
         bump,
     )]
