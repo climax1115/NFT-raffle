@@ -9,6 +9,7 @@ pub const LAMPORTS_PER_SOL : u64 = 1_000_000_000;
 pub const LOTTERY_PREFIX: &str = "lottery";
 pub const LOTTERY_VAULT_PREFIX: &str = "lottery_vault";
 pub const TICKET_PREFIX: &str = "ticket";
+pub const DISCOUNT_PREFIX: &str = "discount";
 
 // wrapper of 'create_account' instruction from 'system_program' program
 #[inline(always)]
@@ -82,3 +83,8 @@ pub fn random(seed: u32) -> u32 {
 
     return (a * seed + c) % m;
 } 
+
+pub fn parse_discount_account<'info, Discount: anchor_lang::AccountDeserialize>(info: &AccountInfo<'info>) -> Result<Discount> {
+    let mut data: &[u8] = &info.try_borrow_mut_data()?;
+    Discount::try_deserialize(&mut data)
+}

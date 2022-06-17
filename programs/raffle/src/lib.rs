@@ -83,18 +83,20 @@ pub mod raffle {
         )
     }
 
-    pub fn buy_ticket_with_sol(
-        ctx: Context<BuyTicketWithSolAccount>,
+    pub fn buy_ticket_with_sol<'key, 'accounts, 'remaining, 'info>(
+        ctx: Context<'key, 'accounts, 'remaining, 'info, BuyTicketWithSolAccount<'info>>,
         amount: u8,
     ) -> Result<()> {
-        ctx.accounts.process(amount)
+        let rem_acc = &ctx.remaining_accounts;
+        ctx.accounts.process(amount, rem_acc.to_vec())
     }
 
-    pub fn buy_ticket_with_spl(
-        ctx: Context<BuyTicketWithSplAccount>,
+    pub fn buy_ticket_with_spl<'key, 'accounts, 'remaining, 'info>(
+        ctx: Context<'key, 'accounts, 'remaining, 'info, BuyTicketWithSplAccount<'info>>,
         amount: u8,
     ) -> Result<()> {
-        ctx.accounts.process(amount)
+        let rem_acc = &ctx.remaining_accounts;
+        ctx.accounts.process(amount, rem_acc.to_vec())
     }
 
     pub fn close_lottery(
@@ -108,6 +110,23 @@ pub mod raffle {
         ctx: Context<CloseAccount>,
     ) -> Result<()> {
         ctx.accounts.process()
+    }
+
+    pub fn create_discount(
+        ctx: Context<CreateDiscountAccount>,
+        bump: u8,
+        discount_type: u8,
+        verifier: Pubkey,
+        discount: u8,
+    ) -> Result<()> {
+        ctx.accounts.process(bump, discount_type, verifier, discount)
+    }
+
+    pub fn update_discount(
+        ctx: Context<UpdateDiscountAccount>,
+        discount: u8,
+    ) -> Result<()> {
+        ctx.accounts.process(discount)
     }
 }
 
@@ -247,6 +266,8 @@ pub struct BuyTicketWithSolAccount<'info> {
     /// CHECK: it's alright
     #[account(mut)]
     pub vault: AccountInfo<'info>,
+    /// CHECK: it's alright
+    pub discount: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
     pub clock_sysvar: Sysvar<'info, Clock>,
@@ -279,6 +300,8 @@ pub struct BuyTicketWithSplAccount<'info> {
         constraint = vault.owner == lottery.creator,
     )]
     pub vault: Box<Account<'info, TokenAccount>>,
+    /// CHECK: it's alright
+    pub discount: AccountInfo<'info>,
     #[account(
         mut,
         constraint = Some(buyer_token_account.mint) == lottery.mint,
@@ -311,4 +334,48 @@ pub struct CloseAccount<'info> {
     #[account(mut)]
     /// CHECK: it's alright
     pub receiver: AccountInfo<'info>,
+}
+
+/// create discount
+#[derive(Accounts)]
+pub struct CreateDiscountAccount<'info> {
+    pub lottery: Box<Account<'info, state::Lottery>>,
+    #[account(
+        init,
+        payer = creator,
+        space = state::Discount::LEN,
+        seeds = [
+            utils::DISCOUNT_PREFIX.as_bytes(), 
+            lottery.key().as_ref(),
+            creator.key().as_ref(), 
+        ], 
+        bump,
+    )]
+    pub discount: Box<Account<'info, state::Discount>>,
+    /// the creator of the ticket
+    #[account(mut)]
+    pub creator: Signer<'info>,
+    pub clock_sysvar: Sysvar<'info, Clock>,
+    pub system_program: Program<'info, System>,
+}
+
+/// update discount
+#[derive(Accounts)]
+pub struct UpdateDiscountAccount<'info> {
+    pub lottery: Box<Account<'info, state::Lottery>>,
+    #[account(
+        mut,
+        seeds = [
+            utils::DISCOUNT_PREFIX.as_bytes(), 
+            lottery.key().as_ref(),
+            creator.key().as_ref(), 
+        ], 
+        bump,
+    )]
+    pub discount: Box<Account<'info, state::Discount>>,
+    /// the creator of the ticket
+    #[account(mut)]
+    pub creator: Signer<'info>,
+    pub clock_sysvar: Sysvar<'info, Clock>,
+    pub system_program: Program<'info, System>,
 }

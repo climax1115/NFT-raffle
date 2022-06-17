@@ -100,8 +100,62 @@ describe('raffle', () => {
     // console.log("Your transaction signature", tx);
   });
 
+  const user = Keypair.generate();
+  it('Create discount', async () => {
+    const [lottery] = await PublicKey.findProgramAddress([
+      Buffer.from("lottery"), 
+      provider.wallet.payer.publicKey.toBuffer(),
+      lotteryKey.toBuffer(),
+    ], program.programId)
+
+    const [discount, bump] = await PublicKey.findProgramAddress([
+      Buffer.from("discount"), 
+      lottery.toBuffer(),
+      provider.wallet.payer.publicKey.toBuffer(),
+    ], program.programId)
+
+    const tx = await program.methods.createDiscount(
+      bump, 
+      1,
+      user.publicKey,
+      30).accounts({
+        lottery,
+        discount,
+        creator: provider.wallet.payer.publicKey,
+        clockSysvar: SYSVAR_CLOCK_PUBKEY,
+        systemProgram: SystemProgram.programId,
+      }).rpc();
+
+    const discountAccount = await program.account.discount.fetch(discount);
+    console.log(discountAccount.discount);
+  })
+
+  it('Update discount', async () => {
+    const [lottery] = await PublicKey.findProgramAddress([
+      Buffer.from("lottery"), 
+      provider.wallet.payer.publicKey.toBuffer(),
+      lotteryKey.toBuffer(),
+    ], program.programId)
+    
+    const [discount] = await PublicKey.findProgramAddress([
+      Buffer.from("discount"), 
+      lottery.toBuffer(),
+      provider.wallet.payer.publicKey.toBuffer(),
+    ], program.programId)
+
+    const tx = await program.methods.updateDiscount(50).accounts({
+        lottery,
+        discount,
+        creator: provider.wallet.payer.publicKey,
+        clockSysvar: SYSVAR_CLOCK_PUBKEY,
+        systemProgram: SystemProgram.programId,
+      }).rpc();
+
+    const discountAccount = await program.account.discount.fetch(discount);
+    console.log(discountAccount.discount)
+  })
+
   it ('Buy ticket', async () => {
-    const user = Keypair.generate();
     const userWallet = new anchor.Wallet(user);
     const userProvider = new anchor.AnchorProvider(provider.connection, userWallet, anchor.AnchorProvider.defaultOptions());
     const userProgram = new anchor.Program(IDL, program.programId, userProvider);
@@ -113,6 +167,17 @@ describe('raffle', () => {
       provider.wallet.payer.publicKey.toBuffer(),
       lotteryKey.toBuffer(),
     ], program.programId)
+
+    const [discount] = await PublicKey.findProgramAddress([
+      Buffer.from("discount"), 
+      lottery.toBuffer(),
+      provider.wallet.payer.publicKey.toBuffer(),
+    ], program.programId)
+    const discountAccount = await provider.connection.getAccountInfo(discount);
+    let rDiscount = lottery;
+    if (discountAccount !== null) {
+      rDiscount = discount;
+    }
 
     const [ticket, bump] = await PublicKey.findProgramAddress([
       Buffer.from("ticket"), 
@@ -133,6 +198,7 @@ describe('raffle', () => {
       ticket,
       buyer: user.publicKey,
       vault: vault.publicKey,
+      discount: rDiscount,
       systemProgram: SystemProgram.programId,
         clockSysvar: SYSVAR_CLOCK_PUBKEY,
     }).rpc();
@@ -157,6 +223,17 @@ describe('raffle', () => {
       lotteryKey.toBuffer(),
     ], program.programId)
 
+    const [discount] = await PublicKey.findProgramAddress([
+      Buffer.from("discount"), 
+      lottery.toBuffer(),
+      provider.wallet.payer.publicKey.toBuffer(),
+    ], program.programId)
+    const discountAccount = await provider.connection.getAccountInfo(discount);
+    let rDiscount = lottery;
+    if (discountAccount !== null) {
+      rDiscount = discount;
+    }
+
     const [ticket, bump] = await PublicKey.findProgramAddress([
       Buffer.from("ticket"), 
       lottery.toBuffer(),
@@ -175,6 +252,7 @@ describe('raffle', () => {
       lottery,
       ticket,
       buyer: user.publicKey,
+      discount: rDiscount,
       vault: vault.publicKey,
       systemProgram: SystemProgram.programId,
         clockSysvar: SYSVAR_CLOCK_PUBKEY,
@@ -326,6 +404,17 @@ describe('raffle', () => {
       lotteryKey2.toBuffer(),
     ], program.programId)
 
+    const [discount] = await PublicKey.findProgramAddress([
+      Buffer.from("discount"), 
+      lottery.toBuffer(),
+      provider.wallet.payer.publicKey.toBuffer(),
+    ], program.programId)
+    const discountAccount = await provider.connection.getAccountInfo(discount);
+    let rDiscount = lottery;
+    if (discountAccount !== null) {
+      rDiscount = discount;
+    }
+
     const [ticket, bump] = await PublicKey.findProgramAddress([
       Buffer.from("ticket"), 
       lottery.toBuffer(),
@@ -349,6 +438,7 @@ describe('raffle', () => {
       ticket,
       buyer: user.publicKey,
       vault,
+      discount: rDiscount,
       buyerTokenAccount: ataAccount,
       tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,

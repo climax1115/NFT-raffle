@@ -1,4 +1,4 @@
-use crate:: {error, UpdateLotteryAccount};
+use crate:: {error, UpdateLotteryAccount, UpdateDiscountAccount};
 use anchor_lang::{prelude::*, solana_program::clock::UnixTimestamp};
 
 impl<'info> UpdateLotteryAccount<'info> {
@@ -38,6 +38,24 @@ impl<'info> UpdateLotteryAccount<'info> {
         self.lottery.limit_tickets = limit_tickets;
         self.lottery.winner_numbers = winners;
 
+        Ok(())
+    }
+}
+
+impl<'info> UpdateDiscountAccount<'info> {
+    pub fn process(
+        &mut self,
+        discount_value: u8
+    ) -> Result<()> {
+
+        // check end date
+        if self.clock_sysvar.unix_timestamp >= self.lottery.start_date {
+            return Err(error::ErrorCode::ExpireDateInThePast.into());
+        }
+
+        let discount = &mut self.discount;
+        discount.discount = discount_value;
+        
         Ok(())
     }
 }

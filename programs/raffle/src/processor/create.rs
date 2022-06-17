@@ -1,4 +1,4 @@
-use crate:: {error, state, CreateSolLotteryAccount, CreateSplLotteryAccount, CreateTicketAccount};
+use crate:: {error, state, CreateSolLotteryAccount, CreateSplLotteryAccount, CreateTicketAccount, CreateDiscountAccount};
 use anchor_lang::{prelude::*, solana_program::clock::UnixTimestamp};
 
 
@@ -109,4 +109,24 @@ impl<'info> CreateTicketAccount<'info> {
 		ticket.bump = bump;
         Ok(())
 	}
+}
+
+impl<'info> CreateDiscountAccount<'info> {
+    pub fn process(&mut self, bump: u8, discount_type: u8, verifier: Pubkey, discount_value: u8) -> Result<()> {
+
+        // check end date
+        if self.clock_sysvar.unix_timestamp >= self.lottery.start_date {
+            return Err(error::ErrorCode::ExpireDateInThePast.into());
+        }
+
+        let discount = &mut self.discount;
+        discount.discount_type = discount_type;
+        discount.verifier = verifier;
+        discount.discount = discount_value;
+        discount.lottery = self.lottery.key().clone();
+        discount.bump = bump;
+        discount.creator = self.creator.key().clone();
+        
+        Ok(())
+    }
 }
