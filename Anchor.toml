@@ -1,14 +1,16 @@
 [programs.localnet]
-raffle = "2T49vgEJQFkkwR6nSNK7PuXyDEHnB7ctQ66NufFkbi88"
+raffle = "BLV8oNcV6cZVvUJoQjK7V1gLEdPdj5u9AKg4StGBtALM"
 [programs.devnet]
-raffle = "2T49vgEJQFkkwR6nSNK7PuXyDEHnB7ctQ66NufFkbi88"
+raffle = "BLV8oNcV6cZVvUJoQjK7V1gLEdPdj5u9AKg4StGBtALM"
+[programs.mainnet]
+raffle = "BLV8oNcV6cZVvUJoQjK7V1gLEdPdj5u9AKg4StGBtALM"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "devnet"
-wallet = "/home/wstar/.config/solana/id.json"
+cluster = "mainnet"
+wallet = "id.json"
 
 [scripts]
 test = "ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"
